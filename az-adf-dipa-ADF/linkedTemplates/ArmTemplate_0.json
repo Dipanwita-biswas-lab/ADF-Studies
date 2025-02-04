@@ -6,6 +6,22 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "az-adf-dipa-ADF"
+		},
+		"AmazonRedshift1_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'AmazonRedshift1'"
+		},
+		"AmazonRedshift1_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "redshift.prd.rwd.norstella-labs.com"
+		},
+		"AmazonRedshift1_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "rwd_production"
+		},
+		"AmazonRedshift1_properties_typeProperties_username": {
+			"type": "string",
+			"defaultValue": "biswas_dipanwita"
 		}
 	},
 	"variables": {
@@ -32,6 +48,26 @@
 					"elapsedTimeMetric": {}
 				},
 				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AmazonRedshift1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AmazonRedshift",
+				"typeProperties": {
+					"server": "[parameters('AmazonRedshift1_properties_typeProperties_server')]",
+					"database": "[parameters('AmazonRedshift1_properties_typeProperties_database')]",
+					"port": 5439,
+					"username": "[parameters('AmazonRedshift1_properties_typeProperties_username')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('AmazonRedshift1_password')]"
+					}
+				}
 			},
 			"dependsOn": []
 		}

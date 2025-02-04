@@ -7,6 +7,22 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "az-adf-dipa-ADF"
 		},
+		"AmazonRedshift1_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'AmazonRedshift1'"
+		},
+		"AmazonRedshift1_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "redshift.prd.rwd.norstella-labs.com"
+		},
+		"AmazonRedshift1_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "rwd_production"
+		},
+		"AmazonRedshift1_properties_typeProperties_username": {
+			"type": "string",
+			"defaultValue": "biswas_dipanwita"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -33,6 +49,18 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"AmazonRedshift1_password": {
+						"value": "[parameters('AmazonRedshift1_password')]"
+					},
+					"AmazonRedshift1_properties_typeProperties_server": {
+						"value": "[parameters('AmazonRedshift1_properties_typeProperties_server')]"
+					},
+					"AmazonRedshift1_properties_typeProperties_database": {
+						"value": "[parameters('AmazonRedshift1_properties_typeProperties_database')]"
+					},
+					"AmazonRedshift1_properties_typeProperties_username": {
+						"value": "[parameters('AmazonRedshift1_properties_typeProperties_username')]"
 					}
 				}
 			},

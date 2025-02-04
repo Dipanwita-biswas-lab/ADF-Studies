@@ -5,6 +5,18 @@
 		"factoryName": {
 			"value": "az-adf-dipa-ADF"
 		},
+		"AmazonRedshift1_password": {
+			"value": ""
+		},
+		"AmazonRedshift1_properties_typeProperties_server": {
+			"value": "redshift.prd.rwd.norstella-labs.com"
+		},
+		"AmazonRedshift1_properties_typeProperties_database": {
+			"value": "rwd_production"
+		},
+		"AmazonRedshift1_properties_typeProperties_username": {
+			"value": "biswas_dipanwita"
+		},
 		"containerUri": {
 			"value": ""
 		},
