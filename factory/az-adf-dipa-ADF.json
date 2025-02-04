@@ -1,0 +1,9 @@
+{
+	"name": "az-adf-dipa-ADF",
+	"location": "southindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "4a219886-d81d-4308-85d0-8a740db9c7be",
+		"tenantId": "9919a9bf-4a23-4438-8c7e-9970d806efb2"
+	}
+}
