@@ -1,0 +1,21 @@
+{
+	"name": "ICD10_codes",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ICDCode",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Valid ICD10 Y2025 & NF Exclude",
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "valid-icd-10-list.xlsx"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

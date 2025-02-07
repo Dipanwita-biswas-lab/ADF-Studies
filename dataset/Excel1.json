@@ -1,0 +1,21 @@
+{
+	"name": "Excel1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ICDCode",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Valid ICD-9 FY2025 & NF Exclude",
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "valid-icd-9-list.xlsx"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
