@@ -7,9 +7,17 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "az-adf-dipa-ADF"
 		},
+		"AZ_Storage_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AZ_Storage'"
+		},
 		"AmazonRedshift1_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'AmazonRedshift1'"
+		},
+		"AZ_Storage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://saazadf.dfs.core.windows.net/"
 		},
 		"AmazonRedshift1_properties_typeProperties_server": {
 			"type": "string",
@@ -22,6 +30,14 @@
 		"AmazonRedshift1_properties_typeProperties_username": {
 			"type": "string",
 			"defaultValue": "biswas_dipanwita"
+		},
+		"LS_ICDCode_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://www.cms.gov/files/document/"
+		},
+		"LS_NDC_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://download.open.fda.gov"
 		},
 		"containerUri": {
 			"type": "string",
@@ -50,8 +66,14 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"AZ_Storage_accountKey": {
+						"value": "[parameters('AZ_Storage_accountKey')]"
+					},
 					"AmazonRedshift1_password": {
 						"value": "[parameters('AmazonRedshift1_password')]"
+					},
+					"AZ_Storage_properties_typeProperties_url": {
+						"value": "[parameters('AZ_Storage_properties_typeProperties_url')]"
 					},
 					"AmazonRedshift1_properties_typeProperties_server": {
 						"value": "[parameters('AmazonRedshift1_properties_typeProperties_server')]"
@@ -61,6 +83,12 @@
 					},
 					"AmazonRedshift1_properties_typeProperties_username": {
 						"value": "[parameters('AmazonRedshift1_properties_typeProperties_username')]"
+					},
+					"LS_ICDCode_properties_typeProperties_url": {
+						"value": "[parameters('LS_ICDCode_properties_typeProperties_url')]"
+					},
+					"LS_NDC_properties_typeProperties_url": {
+						"value": "[parameters('LS_NDC_properties_typeProperties_url')]"
 					}
 				}
 			},

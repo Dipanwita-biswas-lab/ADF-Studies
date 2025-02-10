@@ -7,9 +7,17 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "az-adf-dipa-ADF"
 		},
+		"AZ_Storage_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AZ_Storage'"
+		},
 		"AmazonRedshift1_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'AmazonRedshift1'"
+		},
+		"AZ_Storage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://saazadf.dfs.core.windows.net/"
 		},
 		"AmazonRedshift1_properties_typeProperties_server": {
 			"type": "string",
@@ -22,6 +30,14 @@
 		"AmazonRedshift1_properties_typeProperties_username": {
 			"type": "string",
 			"defaultValue": "biswas_dipanwita"
+		},
+		"LS_ICDCode_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://www.cms.gov/files/document/"
+		},
+		"LS_NDC_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://download.open.fda.gov"
 		}
 	},
 	"variables": {
@@ -29,18 +45,173 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"name": "[concat(parameters('factoryName'), '/Get the ICD10 Codes')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Wait1",
-						"type": "Wait",
+						"name": "Copy ICD Codes",
+						"type": "Copy",
 						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
 						"userProperties": [],
 						"typeProperties": {
-							"waitTimeInSeconds": 1
+							"source": {
+								"type": "ExcelSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET",
+									"requestTimeout": ""
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ICD10_codes",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DelimitedText1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Copy ICD9 Codes",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ExcelSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Excel1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DelimitedText2",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-02-07T11:51:54Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ICD10_codes')]",
+				"[concat(variables('factoryId'), '/datasets/DelimitedText1')]",
+				"[concat(variables('factoryId'), '/datasets/Excel1')]",
+				"[concat(variables('factoryId'), '/datasets/DelimitedText2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/get NDCC codes')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								},
+								"linkedServiceParameters": {}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
 						}
 					}
 				],
@@ -48,6 +219,181 @@
 					"elapsedTimeMetric": {}
 				},
 				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AZ_Storage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "ICDCodes",
+						"folderPath": "ICD10s",
+						"fileSystem": "ad-adf-raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AZ_Storage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AZ_Storage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "ICD9s",
+						"fileSystem": "ad-adf-raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AZ_Storage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Excel1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ICDCode",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "Valid ICD-9 FY2025 & NF Exclude",
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "valid-icd-9-list.xlsx"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ICDCode')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ICD10_codes')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ICDCode",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "Valid ICD10 Y2025 & NF Exclude",
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "valid-icd-10-list.xlsx"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ICDCode')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/NDCJson')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AZ_Storage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "NDC_json",
+						"fileSystem": "ad-adf-others"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AZ_Storage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Parquet1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AZ_Storage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "NDC",
+						"fileSystem": "ad-adf-raw"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AZ_Storage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_Storage')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AZ_Storage_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('AZ_Storage_accountKey')]"
+					}
+				}
 			},
 			"dependsOn": []
 		},
@@ -70,6 +416,398 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_ICDCode')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('LS_ICDCode_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_NDC')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('LS_NDC_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": false,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Json1",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Parquet2",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "flatten1"
+						},
+						{
+							"name": "flatten2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          meta as (disclaimer as string, terms as string, license as string, last_updated as string, results as (skip as integer, limit as integer, total as integer)),",
+						"          results as (product_ndc as string, generic_name as string, labeler_name as string, brand_name as string, active_ingredients as (name as string, strength as string)[], finished as boolean, packaging as (package_ndc as string, description as string, marketing_start_date as string, sample as boolean)[], listing_expiration_date as string, openfda as (manufacturer_name as string[], rxcui as string[], spl_set_id as string[], is_original_packager as boolean[], upc as string[], nui as string[], pharm_class_epc as string[], pharm_class_moa as string[], unii as string[]), marketing_category as string, dosage_form as string, spl_id as string, product_type as string, route as string[], marketing_start_date as string, product_id as string, application_number as string, brand_name_base as string, pharm_class as string[])[]",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'arrayOfDocuments') ~> source1",
+						"source1 foldDown(unroll(results),",
+						"     mapColumn(",
+						"          generic_name = results.generic_name,",
+						"          labeler_name = results.labeler_name,",
+						"          brand_name = results.brand_name,",
+						"          Indegrediaent_Name = results.active_ingredients.name,",
+						"          strength = results.active_ingredients.strength,",
+						"          NDC_code = results.packaging.package_ndc,",
+						"          description = results.packaging.description,",
+						"          listing_expiration_date = results.listing_expiration_date,",
+						"          marketing_category = results.marketing_category,",
+						"          dosage_form = results.dosage_form,",
+						"          product_type = results.product_type,",
+						"          route = results.route,",
+						"          pharm_class = results.pharm_class",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> flatten1",
+						"flatten1 foldDown(unrollMultiple(Indegrediaent_Name,strength,NDC_code,description,route,pharm_class),",
+						"     mapColumn(",
+						"          generic_name,",
+						"          labeler_name,",
+						"          brand_name,",
+						"          listing_expiration_date,",
+						"          marketing_category,",
+						"          dosage_form,",
+						"          product_type,",
+						"          Strength = strength,",
+						"          route,",
+						"          pharm_class,",
+						"          Indegrediaent_Name,",
+						"          description,",
+						"          NDC_code",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> flatten2",
+						"flatten2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Json1')]",
+				"[concat(variables('factoryId'), '/datasets/Parquet2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Json1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AZ_Storage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "NDC_json",
+						"fileSystem": "ad-adf-others"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"meta": {
+							"type": "object",
+							"properties": {
+								"disclaimer": {
+									"type": "string"
+								},
+								"terms": {
+									"type": "string"
+								},
+								"license": {
+									"type": "string"
+								},
+								"last_updated": {
+									"type": "string"
+								},
+								"results": {
+									"type": "object",
+									"properties": {
+										"skip": {
+											"type": "integer"
+										},
+										"limit": {
+											"type": "integer"
+										},
+										"total": {
+											"type": "integer"
+										}
+									}
+								}
+							}
+						},
+						"results": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"product_ndc": {
+										"type": "string"
+									},
+									"generic_name": {
+										"type": "string"
+									},
+									"labeler_name": {
+										"type": "string"
+									},
+									"brand_name": {
+										"type": "string"
+									},
+									"active_ingredients": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"name": {
+													"type": "string"
+												},
+												"strength": {
+													"type": "string"
+												}
+											}
+										}
+									},
+									"finished": {
+										"type": "boolean"
+									},
+									"packaging": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"package_ndc": {
+													"type": "string"
+												},
+												"description": {
+													"type": "string"
+												},
+												"marketing_start_date": {
+													"type": "string"
+												},
+												"sample": {
+													"type": "boolean"
+												}
+											}
+										}
+									},
+									"listing_expiration_date": {
+										"type": "string"
+									},
+									"openfda": {
+										"type": "object",
+										"properties": {
+											"manufacturer_name": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"rxcui": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"spl_set_id": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"is_original_packager": {
+												"type": "array",
+												"items": {
+													"type": "boolean"
+												}
+											},
+											"upc": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"nui": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"pharm_class_epc": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"pharm_class_moa": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"unii": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											}
+										}
+									},
+									"marketing_category": {
+										"type": "string"
+									},
+									"dosage_form": {
+										"type": "string"
+									},
+									"spl_id": {
+										"type": "string"
+									},
+									"product_type": {
+										"type": "string"
+									},
+									"route": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"marketing_start_date": {
+										"type": "string"
+									},
+									"product_id": {
+										"type": "string"
+									},
+									"application_number": {
+										"type": "string"
+									},
+									"brand_name_base": {
+										"type": "string"
+									},
+									"pharm_class": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AZ_Storage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText3')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AZ_Storage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "NDC",
+						"fileSystem": "ad-adf-raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AZ_Storage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Parquet2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AZ_Storage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "NDC",
+						"fileSystem": "ad-adf-raw"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AZ_Storage')]"
+			]
 		}
 	]
 }
