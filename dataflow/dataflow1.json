@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "DelimitedText3",
+						"referenceName": "Parquet2",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
@@ -76,6 +76,7 @@
 				"     skipDuplicateMapOutputs: false) ~> flatten2",
 				"flatten2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     format: 'parquet',",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
