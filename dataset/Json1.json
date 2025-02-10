@@ -1,0 +1,209 @@
+{
+	"name": "Json1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AZ_Storage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "NDC_json",
+				"fileSystem": "ad-adf-others"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"meta": {
+					"type": "object",
+					"properties": {
+						"disclaimer": {
+							"type": "string"
+						},
+						"terms": {
+							"type": "string"
+						},
+						"license": {
+							"type": "string"
+						},
+						"last_updated": {
+							"type": "string"
+						},
+						"results": {
+							"type": "object",
+							"properties": {
+								"skip": {
+									"type": "integer"
+								},
+								"limit": {
+									"type": "integer"
+								},
+								"total": {
+									"type": "integer"
+								}
+							}
+						}
+					}
+				},
+				"results": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"product_ndc": {
+								"type": "string"
+							},
+							"generic_name": {
+								"type": "string"
+							},
+							"labeler_name": {
+								"type": "string"
+							},
+							"brand_name": {
+								"type": "string"
+							},
+							"active_ingredients": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"name": {
+											"type": "string"
+										},
+										"strength": {
+											"type": "string"
+										}
+									}
+								}
+							},
+							"finished": {
+								"type": "boolean"
+							},
+							"packaging": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"package_ndc": {
+											"type": "string"
+										},
+										"description": {
+											"type": "string"
+										},
+										"marketing_start_date": {
+											"type": "string"
+										},
+										"sample": {
+											"type": "boolean"
+										}
+									}
+								}
+							},
+							"listing_expiration_date": {
+								"type": "string"
+							},
+							"openfda": {
+								"type": "object",
+								"properties": {
+									"manufacturer_name": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"rxcui": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"spl_set_id": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"is_original_packager": {
+										"type": "array",
+										"items": {
+											"type": "boolean"
+										}
+									},
+									"upc": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"nui": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"pharm_class_epc": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"pharm_class_moa": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"unii": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									}
+								}
+							},
+							"marketing_category": {
+								"type": "string"
+							},
+							"dosage_form": {
+								"type": "string"
+							},
+							"spl_id": {
+								"type": "string"
+							},
+							"product_type": {
+								"type": "string"
+							},
+							"route": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							},
+							"marketing_start_date": {
+								"type": "string"
+							},
+							"product_id": {
+								"type": "string"
+							},
+							"application_number": {
+								"type": "string"
+							},
+							"brand_name_base": {
+								"type": "string"
+							},
+							"pharm_class": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

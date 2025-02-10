@@ -1,0 +1,88 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Json1",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedText3",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "flatten1"
+				},
+				{
+					"name": "flatten2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          meta as (disclaimer as string, terms as string, license as string, last_updated as string, results as (skip as integer, limit as integer, total as integer)),",
+				"          results as (product_ndc as string, generic_name as string, labeler_name as string, brand_name as string, active_ingredients as (name as string, strength as string)[], finished as boolean, packaging as (package_ndc as string, description as string, marketing_start_date as string, sample as boolean)[], listing_expiration_date as string, openfda as (manufacturer_name as string[], rxcui as string[], spl_set_id as string[], is_original_packager as boolean[], upc as string[], nui as string[], pharm_class_epc as string[], pharm_class_moa as string[], unii as string[]), marketing_category as string, dosage_form as string, spl_id as string, product_type as string, route as string[], marketing_start_date as string, product_id as string, application_number as string, brand_name_base as string, pharm_class as string[])[]",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'arrayOfDocuments') ~> source1",
+				"source1 foldDown(unroll(results),",
+				"     mapColumn(",
+				"          generic_name = results.generic_name,",
+				"          labeler_name = results.labeler_name,",
+				"          brand_name = results.brand_name,",
+				"          Indegrediaent_Name = results.active_ingredients.name,",
+				"          strength = results.active_ingredients.strength,",
+				"          NDC_code = results.packaging.package_ndc,",
+				"          description = results.packaging.description,",
+				"          listing_expiration_date = results.listing_expiration_date,",
+				"          marketing_category = results.marketing_category,",
+				"          dosage_form = results.dosage_form,",
+				"          product_type = results.product_type,",
+				"          route = results.route,",
+				"          pharm_class = results.pharm_class",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten1",
+				"flatten1 foldDown(unrollMultiple(Indegrediaent_Name,strength,NDC_code,description,route,pharm_class),",
+				"     mapColumn(",
+				"          generic_name,",
+				"          labeler_name,",
+				"          brand_name,",
+				"          listing_expiration_date,",
+				"          marketing_category,",
+				"          dosage_form,",
+				"          product_type,",
+				"          Strength = strength,",
+				"          route,",
+				"          pharm_class,",
+				"          Indegrediaent_Name,",
+				"          description,",
+				"          NDC_code",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten2",
+				"flatten2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
