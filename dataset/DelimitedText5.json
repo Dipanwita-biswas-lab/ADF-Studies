@@ -19,6 +19,7 @@
 					"value": "@dataset().file_name",
 					"type": "Expression"
 				},
+				"folderPath": "patient",
 				"fileSystem": "ad-adf-others"
 			},
 			"columnDelimiter": ",",
