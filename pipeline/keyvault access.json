@@ -1,6 +1,29 @@
 {
-	"name": "pipeline1",
+	"name": "keyvault access",
 	"properties": {
+		"activities": [
+			{
+				"name": "Web1",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "GET",
+					"url": "https://kv-az-adf-dipa.vault.azure.net/secrets/secret/1505c8dcdd42478ba3cb5986d77683d3?api_version=7",
+					"authentication": {
+						"type": "MSI",
+						"resource": "http://vault.azure.net"
+					}
+				}
+			}
+		],
 		"annotations": []
 	}
 }
